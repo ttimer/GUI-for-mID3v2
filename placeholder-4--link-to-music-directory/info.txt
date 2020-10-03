@@ -1,0 +1,28 @@
+structure (example)
+
+|
+|--music--|
+|         |--Part1
+          |--Part2--|
+          |         |--Albert Hammond - The Free Electric Band.mp3
+                    |--Artist B - Song Y.mp3
+                    |--Artist C - Song X.mp3
+                    |
+
+                     
+----
+Set a link to 'Part2' then use ./Part2/ in 'relpath'  
+or set a link from 'music' then use ./music/ ! 
+
+With 
+'viewonly' checked 
+
+and 
+'executeit' NOT(!) checked 
+            ==============
+click  
+'submit'
+
+to test the options without writing any tag.
+
+(Info about mid3v2 could be helpful, e.g.: man mid3v2)
