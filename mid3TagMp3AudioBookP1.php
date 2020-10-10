@@ -2,8 +2,10 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<title>MP3 files in this directory (incl. subfolders)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>MP3-Dateien in diesem Verzeichnis (inkl. Unterverzeichnisse)</title>
+<meta property="og:url" content="https://smolka.lima-city.de/">
+<meta name="author" content="Jürgen Smolka">
 <script type="text/javascript" src="dhtml.js"></script>
 <script type="text/javascript">
 function setAll() {
@@ -46,15 +48,22 @@ function clearAll() {
 }
 
 function setPic() {
- var pic = document.id3.relpfad.value + "cover.jpg";
+ var pic = "pic.jpg";
+ if(document.id3.relpfad.value != '')
+   pic = document.id3.relpfad.value + "cover.jpg";
  document.id3.picture.value = pic;
 }
+
+function ladenaus() { document.load.style.display = "none"; } 
+function ladenein() { document.load.style.display = "block"; } 
 </script>
 </head>
 
-<body>
+<body onload="ladenaus();">
+<a name="top"></a>
+<noscript style="text-align:center;"><h1>Please activate JavaScript</h1></noscript>
 <?php
-$relpfad  = "./";  //"./test/";
+$relpfad  = "";    //"./";  //"./test/";
 $viewonly = null;
 $execute  = null;
 
@@ -123,13 +132,13 @@ if(!empty($_POST["picture"]))
 
 ?>
 
-<form name="id3" method="post" action="<?php echo $_SERVER["PHP_SELF"] ?>" style="margin-left:11%;">
+<form name="id3" method="post" action="<?php echo $_SERVER["PHP_SELF"] ?>" style="margin-left:11%;" onsubmit="ladenein();">
  <fieldset style="width:900px;">
-  <legend><span style="font-weight:700;">Hörbuch B</span> (Steuerung)</legend>
+  <legend><span style="font-weight:700;">Audio Book</span> P1 (control)</legend>
   <p>
-    relpfad: <input type="text" name="relpfad" style="width:777px;" value="<?php echo $relpfad ?>" required />
+    (rel)path: <input type="text" name="relpfad" style="width:777px;" value="<?php echo $relpfad ?>" placeholder="./artist/album/" required />
   </p>
-  <p>
+  <p style="display:none">
     viewonly: <input type="checkbox" name="viewonly" checked />
   </p>
   <p>
@@ -138,12 +147,12 @@ if(!empty($_POST["picture"]))
  </fieldset>
  
  <fieldset style="width:900px;">
-  <legend><span style="font-weight:700;">ID3-Tag</span> (Feldsteuerung)</legend>
+  <legend><span style="font-weight:700;">ID3 Tags</span> (tag control)</legend>
   <table cellpadding="4" cellspacing="11">
    <tr>
     <td>-a (Artist):</td><td><input type="checkbox" name="Xartist" <?php echo $Xartist ?> /></td><td> | </td>
     <td>-A (Album):</td> <td><input type="checkbox" name="Xalbum" <?php echo $Xalbum ?> /></td><td> | </td>
-    <td>-t (Titel):</td> <td><input type="checkbox" name="Xtitel" <?php echo $Xtitel ?> /></td><td> | </td>
+    <td>-t (Title):</td> <td><input type="checkbox" name="Xtitel" <?php echo $Xtitel ?> /></td><td> | </td>
     <td>-T (Track):</td> <td><input type="checkbox" name="Xtrack" <?php echo $Xtrack ?> /></td><td> | </td>
     <td><a href="javascript:setLine1()">line1</a> | <a href="javascript:setStandard()">std.</a> | <a href="javascript:setAll()">all</a> | <a href="javascript:clearAll()">clear</a></td>
    </tr>
@@ -158,7 +167,7 @@ if(!empty($_POST["picture"]))
  </fieldset>
  
  <fieldset style="width:900px;">
-  <legend style="font-weight:700; line-height:133%;">Manuelle Übersteuerung</legend>
+  <legend style="font-weight:700; line-height:133%;">Manual adaption</legend>
   <table>
   <tr><td>
     artist: </td><td><input type="text" name="artist" style="width:767px;" value="<?php echo $artist ?>" />
@@ -167,13 +176,13 @@ if(!empty($_POST["picture"]))
     album:  </td><td><input type="text" name="album" style="width:767px;" value="<?php echo $album ?>" />
   </td></tr>
   <tr><td>
-    titel:  </td><td><input type="text" name="titel" style="width:767px;" value="<?php echo $titel ?>" placeholder="%T  (Track-Nr. als Prefix: 001-...)" />
+    title:  </td><td><input type="text" name="titel" style="width:767px;" value="<?php echo $titel ?>" placeholder="(%T :: track as prefix: 001-... | or in text: xxx 001 xxx)" />
   </td></tr>
   <tr><td>
-    track:  </td><td><input type="text" name="track" style="width:767px;" value="<?php echo $track ?>" placeholder="Startwert (aktuell: 001)" />
+    track:  </td><td><input type="text" name="track" style="width:767px;" value="<?php echo $track ?>" placeholder="001  (initial value)" />
   </td></tr>
   <tr><td>
-    genre:  </td><td><input type="text" name="genre" style="width:767px;" value="<?php echo $genre ?>" placeholder="101  (Sprache)" />
+    <a href="./mid3TagMp3Genre.php" target="genre">genre</a>:  </td><td><input type="text" name="genre" style="width:767px;" value="<?php echo $genre ?>" placeholder="101  (speech)" />
   </td></tr>
   <tr><td>
     year:  </td><td><input type="text" name="year" style="width:767px;" value="<?php echo $year ?>" />
@@ -194,6 +203,7 @@ if(!empty($_POST["picture"]))
     <input type="submit" name="submit" value="submit" style="width:930px;" />
   </p>
 </form>
+<p style="margin-left:11%;"><img name="load" src="loading.gif" width="44" height="44" alt="loading"></p>
 
 <?php
 // App-Steuerung
@@ -213,12 +223,16 @@ if (isset($_POST["submit"])) {
   $batch = scan_dir($relpfad, $fileTyp, TRUE, FALSE, TRUE, $onlyDir, $dateien);
   
   if($batch == false) {
-    echo "Verzeichnis existiert nicht <br />\n$relpfad";
+    echo '<dir style="margin-left:8%; font-weight:bold;">';
+    echo '<p style="color:red;">No mp3 files or <u>&nbsp;folder&nbsp;</u> not existent!</p>'; 
+    echo "\n <p>$relpfad</p>";
+    echo '</dir>';
     exit();
   }
   
   if($viewonly)
     $ausgabe = buildSites2c($batch);
+  echo '<dir style="text-align:center;"><p><a href="#top">top</a><br><br></p></dir>';
 }
 ?>
 

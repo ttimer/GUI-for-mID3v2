@@ -1,6 +1,11 @@
-/* DHTML-Bibliothek (based on SelfHTML) */
+/* DHTML-Bibliothek (based on SelfHTML)     */
+/*                                          */   
+/*   @author Jürgen Smolka                  */
+/*   @link   https://smolka.lima-city.de/   */
+/*                                          */   
 
-var DHTML = false, DOM = false, MSIE4 = false, NS4 = false, OP = false;
+var DHTML = false, DOM = false; 
+var MSIE4 = false, NS4 = false, OP = false;
 
 if (document.getElementById) {
   DHTML = true;

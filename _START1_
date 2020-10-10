@@ -1,0 +1,4 @@
+#!/bin/bash
+konsole --nofork -e php -S localhost:8888 -t $PWD & 
+xdg-open 'http://localhost:8888/index.php' 
+exit 0

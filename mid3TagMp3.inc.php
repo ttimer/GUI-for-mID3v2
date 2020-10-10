@@ -1,6 +1,10 @@
 <?PHP
-
 /**
+ *   
+ *   @author Jürgen Smolka
+ *   @link   https://smolka.lima-city.de/
+ *   
+ *
  *   BASED ON:   
  *
  *	Rekursive Verzeichnisdarstellung
@@ -93,18 +97,141 @@ function buildSites($pictures)
 	return $ausgabe;
 }
 
-// Hörbücher u. ä. - Aufruf per: id3TagMp3.php
+// Liste der vorhandenen Tags - Aufruf per mid3TagMp3ListTags.php
+function buildSites1($batch)
+{
+    $ausgabe = "";     // JS
+    
+	reset($batch);
+	ksort($batch); // JS sortiert Verzeichnisse (CD1, CD2 ...)
+
+	if(!$batch) {
+          echo '<h4 style="color:red; margin-left:11%;">No data fetched ...</h4>';
+          echo '<p style="margin-left:11%;">Try <b>mid3v2 -l <i>file.mp3</i></b> on konsole!</p>';
+          exit();
+        }              // JS
+
+	echo '<a name="tag"></a><br>';
+	echo '<dir style="margin-left:11%;">';
+	echo '<b>tags only</b> &nbsp;<a href="#file">files only</a> &nbsp;';
+	echo '<a href="#kombi">combined</a> &nbsp;<a href="#top">top</a><br>';
+	echo "</dir>\n";
+	foreach($batch as $key => $array) 
+	{
+		ksort($array); // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
+		
+		foreach ($array as $key2 => $array1) 
+		{
+			if(!empty($batch[$key][$key2]['file'])){
+				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
+				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
+				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
+
+				$tags = "";
+                                $shellBefehl = "mid3v2 -l '$path'";
+                                exec($shellBefehl, $tags);
+
+                                foreach ( $tags as $strKey => $strValue ) {
+                                  if($strKey != 0)
+                                    echo ' | ' . $strValue;
+                                }
+                                echo "<br> \n <br> \n";
+			}
+		}
+	}
+
+	flush();
+	echo '<hr style="width:80%;"><br>';
+	echo '<a name="file"></a>';
+	echo '<dir style="margin-left:11%;">';
+	echo '<a href="#tag">tags only</a> &nbsp;<b>files only</b> &nbsp;';
+	echo '<a href="#kombi">combined</a> &nbsp;<a href="#top">top</a><br>';
+	echo "</dir>\n";
+	foreach($batch as $key => $array) 
+	{
+		ksort($array); // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
+		
+		foreach ($array as $key2 => $array1) 
+		{
+			if(!empty($batch[$key][$key2]['file'])){
+				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
+				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
+				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
+
+				$tags = "";
+                                $shellBefehl = "mid3v2 -l '$path'";
+                                exec($shellBefehl, $tags);
+
+                                foreach ( $tags as $strKey => $strValue ) {
+                                  if($strKey == 0)
+                                    echo $strValue;
+                                }
+                                echo "<br> \n <br> \n";
+			}
+		}
+	}
+
+        flush();
+	echo '<hr style="width:80%;"><br>';
+	echo '<a name="kombi"></a><br>';
+	echo '<dir style="margin-left:11%;">';
+	echo '<a href="#tag">tags only</a> &nbsp;<a href="#file">files only</a> &nbsp;';
+	echo '<b>combined</b> &nbsp;<a href="#top">top</a><br>';
+	echo "</dir>\n";
+	foreach($batch as $key => $array) 
+	{
+		ksort($array); // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
+		
+		foreach ($array as $key2 => $array1) 
+		{
+			if(!empty($batch[$key][$key2]['file'])){
+				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
+				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
+				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
+
+				$tags = "";
+                                $shellBefehl = "mid3v2 -l '$path'";
+                                exec($shellBefehl, $tags);
+
+                                foreach ( $tags as $strKey => $strValue ) {
+                                  if($strKey == 0)
+                                    echo '<b>' . $strValue . '</b><br>' . "\n";
+                                  else
+                                    echo ' | ' . $strValue;
+                                }
+                                echo "<br> \n <br> \n <br> \n";
+			}
+		}
+	}
+    return $ausgabe;
+}
+
+// Hörbücher u. ä. - Aufruf per: mid3TagMp3??????.php
 function buildSites2($batch)
 {
-    $ausgabe = "";    // JS
-    $tracknr = "001"; // JS
-	reset ($batch);
-	
-	//$ausgabe .= '<div id="navBar">' . "\n";
-	//$ausgabe .= '	<div id="sectionLinks">' . "\n";
-	
-	ksort($batch); // JS sortiert Verzeichnisse (CD1, CD2 ...)
-	
+    $ausgabe  = "";           // JS
+    $tracknr  = "001";        // JS
+    $lenTrack = 3;            // JS
+    $trackpa  = "";           // JS
+    $trackpo  = "";           // JS
+    
+    reset($batch);
+    ksort($batch);            // JS sortiert Verzeichnisse (CD1, CD2 ...)
+
+    if(!empty($_POST["track"]) && isset($_POST["Xtrack"])) {
+        $tracknr = $_POST["track"];
+        if(strstr($tracknr, "/")) {
+          $tracknr = str_replace(" ", "", $tracknr);
+          $trackpa = explode("/", $tracknr, 2);
+          $tracknr = $trackpa[0];
+          $trackpo = "/" . $trackpa[1];
+        }
+        $lenTrack = strlen($tracknr);
+    }
+
 	foreach($batch as $key => $array) 
 	{
 		//$ausgabe .= '		<h3>'.$batch[$key]['name']['dir'].'</h3>' . "\n";
@@ -139,7 +266,8 @@ function buildSites2($batch)
 	
 	$Titel  = str_replace(".mp3", "", $batch[$key][$key2]['file']);
 	$Titel  = str_replace("-", "", $Titel);
-	$Track  = $tracknr;
+        $Titelt = $Titel; 
+	$Track  = $tracknr . $trackpo;
 	$Datei  = trim($path);
 	//$Datei  = "./" . $Datei; // direkt im Hauptprogramm vorgeben!!!
 	
@@ -151,7 +279,6 @@ function buildSites2($batch)
 	$Exe    = "";
 	//echo $Artist . $Album . $Titel .$Track . $Datei . "<br />\n";
 
-	
 	if(!empty($_POST["artist"]))
 	  $Artist = $_POST["artist"];
         if(!empty($_POST["album"]))
@@ -168,59 +295,75 @@ function buildSites2($batch)
 	  $Exe = $_POST["execute"];
 	
 	//echo("mid3v2 -a '$_POST[artist]' -A '$_POST[album]' -t '$_POST[titel]' -T $_POST[track] -g $_POST[genre] '$Datei'<br />\n");
-	//echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre -c '$Coment' '$Datei'<br />\n");
-	echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'<br />\n");
+	//echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' -c '$Coment' '$Datei'<br />\n");
+	echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'<br />\n");
 	if($Exe == "on")
-	  exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'");
-	  //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre -c '$Coment' '$Datei'");
+	  exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'");
+	  //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' -c '$Coment' '$Datei'");
 	//exec("mid3v2 -a '$Artist' -A 'Moerderische Cote d Azur' -t '$Titel' -T $Track -g 101 '$Datei'");
 	
 // 	// Genre 101 == Speech (Hörbuch)
 // 	echo("id3ren -tag -edit -tagonly -noyear -nocomment -album='$Album' -artist='$Artist' -song='$Titel' -track=$Track -genre=101 '$Datei'<br />\n");
 // 	exec("id3ren -tag -edit -tagonly -noyear -nocomment -album='$Album' -artist='$Artist' -song='$Titel' -track=$Track -genre=101 '$Datei'");
 	
-
-                            if(strlen($tracknr) == 1) {
-				$tracknr = sprintf("%s",($tracknr + 1));
-                            }
-                            if(strlen($tracknr) == 2) {
-				if($tracknr < 9)
-				  $tracknr = sprintf("0%s",($tracknr + 1));
-                                elseif($tracknr >= 9 && $tracknr < 99)
-				  $tracknr = sprintf("%s",($tracknr + 1));
-                            }
-                            if(strlen($tracknr) == 3) {
-				if($tracknr < 9)
-				  $tracknr = sprintf("00%s",($tracknr + 1));
-                                elseif($tracknr >= 9 && $tracknr < 99)
-				  $tracknr = sprintf("0%s",($tracknr + 1));
-                                else
-                                  $tracknr = sprintf("%s",($tracknr + 1));
-                            }
-			}
-
-		}
-		//$ausgabe .= '		</ul>' . "\n";
-	}
-	
-	//$ausgabe .= '	</div>' . "\n";
-	//$ausgabe .= '</div>' . "\n";
-
-	return $ausgabe;
+               if($lenTrack == 1 || $lenTrack > 4) {
+                    $tracknr = sprintf("%s",($tracknr + 1));
+               }
+               if($lenTrack == 2) {
+                if($tracknr < 9)
+                    $tracknr = sprintf("0%s",($tracknr + 1));
+//                 elseif($tracknr >= 9 && $tracknr < 99)
+//                     $tracknr = sprintf("%s",($tracknr + 1));
+                else
+                    $tracknr = sprintf("%s",($tracknr + 1));
+               }
+               if($lenTrack == 3) {
+                if($tracknr < 9)
+                    $tracknr = sprintf("00%s",($tracknr + 1));
+                elseif($tracknr >= 9 && $tracknr < 99)
+                    $tracknr = sprintf("0%s",($tracknr + 1));
+                else
+                    $tracknr = sprintf("%s",($tracknr + 1));
+               }
+               if($lenTrack == 4) {
+                if($tracknr < 9)
+                    $tracknr = sprintf("000%s",($tracknr + 1));
+                elseif($tracknr >= 9 && $tracknr < 99)
+                    $tracknr = sprintf("00%s",($tracknr + 1));
+                elseif($tracknr >= 99 && $tracknr < 999)
+                    $tracknr = sprintf("0%s",($tracknr + 1));
+                else
+                    $tracknr = sprintf("%s",($tracknr + 1));
+               }
+            }
+        }
+    }
+    return $ausgabe;
 }
 
-// Hörbücher u. ä. - Aufruf per: mid3TagMp3Hoerbuch.php
+// Hörbücher u. ä. - Aufruf per: mid3TagMp3AudioBook.php
 function buildSites2b($batch)
 {
-    $ausgabe = "";           // JS
-    $tracknr = "001";        // JS
+    $ausgabe  = "";           // JS
+    $tracknr  = "001";        // JS
+    $lenTrack = 3;            // JS
+    $trackpa  = "";           // JS
+    $trackpo  = "";           // JS
     
-    reset ($batch);
-    ksort($batch);           // JS sortiert Verzeichnisse (CD1, CD2 ...)
+    reset($batch);
+    ksort($batch);            // JS sortiert Verzeichnisse (CD1, CD2 ...)
     
-    if(!empty($_POST["track"]) && isset($_POST["Xtrack"]))
+    if(!empty($_POST["track"]) && isset($_POST["Xtrack"])) {
         $tracknr = $_POST["track"];
-	
+        if(strstr($tracknr, "/")) {
+          $tracknr = str_replace(" ", "", $tracknr);
+          $trackpa = explode("/", $tracknr, 2);
+          $tracknr = $trackpa[0];
+          $trackpo = "/" . $trackpa[1];
+        }
+        $lenTrack = strlen($tracknr);
+    }
+
     foreach($batch as $key => $array) 
     {
         ksort($array);       // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
@@ -241,7 +384,8 @@ function buildSites2b($batch)
                 $Album  = strtok("/");           // dritter Abschnitt $path
                 $Titel  = str_replace(".mp3", "", $batch[$key][$key2]['file']);
                 $Titel  = str_replace("-", "", $Titel);
-                $Track  = $tracknr;
+                $Titelt = $Titel; 
+                $Track  = $tracknr . $trackpo;
                 $Datei  = trim($path);
                 
                 $Artist  = trim($Artist);
@@ -260,13 +404,18 @@ function buildSites2b($batch)
                   $Album = $_POST["album"];
                 if(!empty($_POST["titel"]) && isset($_POST["Xtitel"])) {
                   if($_POST["titel"] == "%T")
-                    $Titel = "$Track-" . $Titel;
+                    $Titel = "$tracknr-" . $Titel; //$Titel = "$Track-" . $Titel;
                   else
                     $Titel = $_POST["titel"];
-                  $Titel = str_replace("%T", $Track, $Titel);
+                  $Titel = str_replace("%T", $tracknr, $Titel); //$Titel = str_replace("%T", $Track, $Titel);
+                  $Titel = str_replace("%t", $Titelt, $Titel);
                 }
-                if(!empty($_POST["genre"]) && isset($_POST["Xgenre"]))
+                if(!empty($_POST["genre"]) && isset($_POST["Xgenre"])) {
                   $Genre = $_POST["genre"];
+                  if($Genre == "'0'" || stristr("zero", $Genre) || 
+                     $Genre == '"0"' || stristr("null", $Genre)) 
+                    $Genre = (string)0;
+                }
                 if(!empty($_POST["year"]) && isset($_POST["Xyear"]))
                   $Year = $_POST["year"];
         	if(!empty($_POST["comment"]) && isset($_POST["Xcomment"]))
@@ -286,7 +435,7 @@ function buildSites2b($batch)
                 if(isset($_POST["Xtrack"]))
                   $Befehl .= " -T $Track";
                 if(isset($_POST["Xgenre"]))
-                  $Befehl .= " -g $Genre";
+                  $Befehl .= " -g '$Genre'";
                 if(isset($_POST["Xyear"]))
                   $Befehl .= " -y $Year";
         	if(isset($_POST["Xcomment"]))
@@ -297,25 +446,37 @@ function buildSites2b($batch)
                 $Befehl .= " '$Datei'";
                 
                 // Batch-Anzeige
-                echo "<p style='margin-left:7%;'>" . $Befehl . "</p>\n"; //echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'<br />\n");
+                echo "<p style='margin-left:7%;'>" . $Befehl . "</p>\n"; //echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'<br />\n");
                 
                 // Änderung durchführen
                 if($Exe == "on")
-                  exec($Befehl); //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'");
+                  exec($Befehl); //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'");
                 
-               if(strlen($tracknr) == 1) {
+               if($lenTrack == 1 || $lenTrack > 4) {
                     $tracknr = sprintf("%s",($tracknr + 1));
                }
-               if(strlen($tracknr) == 2) {
+               if($lenTrack == 2) {
                 if($tracknr < 9)
                     $tracknr = sprintf("0%s",($tracknr + 1));
-                elseif($tracknr >= 9 && $tracknr < 99)
+//                 elseif($tracknr >= 9 && $tracknr < 99)
+//                     $tracknr = sprintf("%s",($tracknr + 1));
+                else
                     $tracknr = sprintf("%s",($tracknr + 1));
                }
-               if(strlen($tracknr) == 3) {
+               if($lenTrack == 3) {
                 if($tracknr < 9)
                     $tracknr = sprintf("00%s",($tracknr + 1));
                 elseif($tracknr >= 9 && $tracknr < 99)
+                    $tracknr = sprintf("0%s",($tracknr + 1));
+                else
+                    $tracknr = sprintf("%s",($tracknr + 1));
+               }
+               if($lenTrack == 4) {
+                if($tracknr < 9)
+                    $tracknr = sprintf("000%s",($tracknr + 1));
+                elseif($tracknr >= 9 && $tracknr < 99)
+                    $tracknr = sprintf("00%s",($tracknr + 1));
+                elseif($tracknr >= 99 && $tracknr < 999)
                     $tracknr = sprintf("0%s",($tracknr + 1));
                 else
                     $tracknr = sprintf("%s",($tracknr + 1));
@@ -326,19 +487,30 @@ function buildSites2b($batch)
     return $ausgabe;
 }
 
-// Hörbücher u. ä. - Aufruf per: mid3TagMp3HoerbuchB.php 
-// -- B(!) :: Bild nur in erster MP3-Datei speichern
+// Hörbücher u. ä. - Aufruf per: mid3TagMp3AudioBookP1.php (aktuell auch ..P1L)
+// -- P1(!) :: Bild nur in erster MP3-Datei speichern
 function buildSites2c($batch)
 {
-    $ausgabe = "";           // JS
-    $tracknr = "001";        // JS
+    $ausgabe  = "";           // JS
+    $tracknr  = "001";        // JS
+    $lenTrack = 3;            // JS
+    $trackpa  = "";           // JS
+    $trackpo  = "";           // JS
     
-    reset ($batch);
-    ksort($batch);           // JS sortiert Verzeichnisse (CD1, CD2 ...)
+    reset($batch);
+    ksort($batch);            // JS sortiert Verzeichnisse (CD1, CD2 ...)
     
-    if(!empty($_POST["track"]) && isset($_POST["Xtrack"]))
+    if(!empty($_POST["track"]) && isset($_POST["Xtrack"])) {
         $tracknr = $_POST["track"];
-	
+        if(strstr($tracknr, "/")) {
+          $tracknr = str_replace(" ", "", $tracknr);
+          $trackpa = explode("/", $tracknr, 2);
+          $tracknr = $trackpa[0];
+          $trackpo = "/" . $trackpa[1];
+        }
+        $lenTrack = strlen($tracknr);
+    }
+
     foreach($batch as $key => $array) 
     {
         ksort($array);       // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
@@ -359,7 +531,8 @@ function buildSites2c($batch)
                 $Album  = strtok("/");           // dritter Abschnitt $path
                 $Titel  = str_replace(".mp3", "", $batch[$key][$key2]['file']);
                 $Titel  = str_replace("-", "", $Titel);
-                $Track  = $tracknr;
+                $Titelt = $Titel; 
+                $Track  = $tracknr . $trackpo;
                 $Datei  = trim($path);
                 
                 $Artist  = trim($Artist);
@@ -378,13 +551,18 @@ function buildSites2c($batch)
                   $Album = $_POST["album"];
                 if(!empty($_POST["titel"]) && isset($_POST["Xtitel"])) {
                   if($_POST["titel"] == "%T")
-                    $Titel = "$Track-" . $Titel;
+                    $Titel = "$tracknr-" . $Titel; //$Titel = "$Track-" . $Titel;
                   else
                     $Titel = $_POST["titel"];
-                  $Titel = str_replace("%T", $Track, $Titel);
+                  $Titel = str_replace("%T", $tracknr, $Titel); //$Titel = str_replace("%T", $Track, $Titel);
+                  $Titel = str_replace("%t", $Titelt, $Titel);
                 }
-                if(!empty($_POST["genre"]) && isset($_POST["Xgenre"]))
+                if(!empty($_POST["genre"]) && isset($_POST["Xgenre"])) {
                   $Genre = $_POST["genre"];
+                  if($Genre == "'0'" || stristr("zero", $Genre) || 
+                     $Genre == '"0"' || stristr("null", $Genre)) 
+                    $Genre = (string)0;
+                }
                 if(!empty($_POST["year"]) && isset($_POST["Xyear"]))
                   $Year = $_POST["year"];
         	if(!empty($_POST["comment"]) && isset($_POST["Xcomment"]))
@@ -404,7 +582,7 @@ function buildSites2c($batch)
                 if(isset($_POST["Xtrack"]))
                   $Befehl .= " -T $Track";
                 if(isset($_POST["Xgenre"]))
-                  $Befehl .= " -g $Genre";
+                  $Befehl .= " -g '$Genre'";
                 if(isset($_POST["Xyear"]))
                   $Befehl .= " -y $Year";
         	if(isset($_POST["Xcomment"]))
@@ -420,25 +598,37 @@ function buildSites2c($batch)
                 $Befehl .= " '$Datei'";
                 
                 // Batch-Anzeige
-                echo "<p style='margin-left:7%;'>" . $Befehl . "</p>\n"; //echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'<br />\n");
+                echo "<p style='margin-left:7%;'>" . $Befehl . "</p>\n"; //echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'<br />\n");
                 
                 // Änderung durchführen
                 if($Exe == "on")
-                  exec($Befehl); //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'");
+                  exec($Befehl); //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'");
                 
-               if(strlen($tracknr) == 1) {
+               if($lenTrack == 1 || $lenTrack > 4) {
                     $tracknr = sprintf("%s",($tracknr + 1));
                }
-               if(strlen($tracknr) == 2) {
+               if($lenTrack == 2) {
                 if($tracknr < 9)
                     $tracknr = sprintf("0%s",($tracknr + 1));
-                elseif($tracknr >= 9 && $tracknr < 99)
+//                 elseif($tracknr >= 9 && $tracknr < 99)
+//                     $tracknr = sprintf("%s",($tracknr + 1));
+                else
                     $tracknr = sprintf("%s",($tracknr + 1));
                }
-               if(strlen($tracknr) == 3) {
+               if($lenTrack == 3) {
                 if($tracknr < 9)
                     $tracknr = sprintf("00%s",($tracknr + 1));
                 elseif($tracknr >= 9 && $tracknr < 99)
+                    $tracknr = sprintf("0%s",($tracknr + 1));
+                else
+                    $tracknr = sprintf("%s",($tracknr + 1));
+               }
+               if($lenTrack == 4) {
+                if($tracknr < 9)
+                    $tracknr = sprintf("000%s",($tracknr + 1));
+                elseif($tracknr >= 9 && $tracknr < 99)
+                    $tracknr = sprintf("00%s",($tracknr + 1));
+                elseif($tracknr >= 99 && $tracknr < 999)
                     $tracknr = sprintf("0%s",($tracknr + 1));
                 else
                     $tracknr = sprintf("%s",($tracknr + 1));
@@ -449,17 +639,14 @@ function buildSites2c($batch)
     return $ausgabe;
 }
 
-// Musikstücke/Songs (mp3-Dateien) - Aufruf per: id3TagMusikMp3.php
+// Musikstücke/Songs (mp3-Dateien) - Aufruf per: mid3TagMp3Music.php
 function buildSites3($batch)
 {
-    $ausgabe = "";  // JS
-    $tracknr = "1"; // JS
-	reset ($batch);
-	
-	//$ausgabe .= '<div id="navBar">' . "\n";
-	//$ausgabe .= '	<div id="sectionLinks">' . "\n";
-	
-	ksort($batch); // JS sortiert Verzeichnisse (CD1, CD2 ...)
+    $ausgabe = "";   // JS
+    $tracknr = "1";  // JS
+    
+    reset($batch);
+    ksort($batch);   // JS sortiert Verzeichnisse (CD1, CD2 ...)
 	
 	foreach($batch as $key => $array) 
 	{
@@ -506,19 +693,23 @@ function buildSites3($batch)
 	  $Titel = $_POST["titel"];
 	if(!empty($_POST["track"]))
 	  $Track = $_POST["track"];
-	if(!empty($_POST["genre"]))
+	if(!empty($_POST["genre"])) {
 	  $Genre = $_POST["genre"];
+          if($Genre == "'0'" || stristr("zero", $Genre) || 
+             $Genre == '"0"' || stristr("null", $Genre))
+            $Genre = (string)0;
+        }
 // 	if(!empty($_POST["comment"]))
 // 	  $Coment = $_POST["comment"];
 	if(isset($_POST["execute"]))
 	  $Exe = $_POST["execute"];
 	
 	//echo("mid3v2 -a '$_POST[artist]' -A '$_POST[album]' -t '$_POST[titel]' -T $_POST[track] -g $_POST[genre] '$Datei'<br />\n");
-	//echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre -c '$Coment' '$Datei'<br />\n");
-	echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'<br />\n");
+	//echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' -c '$Coment' '$Datei'<br />\n");
+	echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'<br />\n");
 	if($Exe == "on")
-	  exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre '$Datei'");
-	  //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g $Genre -c '$Coment' '$Datei'");
+	  exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'");
+	  //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' -c '$Coment' '$Datei'");
 	//exec("mid3v2 -a '$Artist' -A 'Moerderische Cote d Azur' -t '$Titel' -T $Track -g 101 '$Datei'");
 	
 // 	// Genre 101 == Speech (Hörbuch)

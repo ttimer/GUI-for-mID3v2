@@ -19,7 +19,7 @@ The used environment is:
 
 Some are prerequisites (like PHP, Python and Mutagen), others are interchangeable. For example, if you use Chromium instead of Firefox you must edit the shell scripts or do the steps manually. 
 
-To start just click on a shell script (localhost8888-xxxx.sh).
+To start just click on _STARTx_ or an other shell script (localhost8888-xxxx.sh).
 
 
 License:
