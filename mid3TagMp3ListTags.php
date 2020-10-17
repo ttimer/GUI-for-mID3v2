@@ -13,9 +13,6 @@
 <a name="top"></a>
 <noscript style="text-align:center;"><h1>Please activate JavaScript</h1></noscript>
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 $relpfad  = "";    //"./";  //"./test/";
 $viewonly = null;
 $execute  = null;
@@ -36,6 +33,8 @@ include_once("mid3TagMp3.inc.php");
 
 if (isset($_POST["relpfad"]))
   $relpfad = $_POST["relpfad"];
+if(substr($relpfad, -1, 1) != "/" && strlen($relpfad) > 1)
+  $relpfad = $relpfad . "/";
   
 if(!empty($_POST["artist"]))
   $artist = $_POST["artist"];
@@ -85,6 +84,8 @@ if (isset($_POST["submit"])) {
   if(isset($_POST["execute"]))
     $execute = $_POST["execute"];
  
+  if(substr($relpfad, -1, 1) != "/" && strlen($relpfad) > 1) 
+    $relpfad = $relpfad . "/";
   $batch = scan_dir($relpfad, $fileTyp, TRUE, FALSE, TRUE, $onlyDir, $dateien);
   
   if($batch == false) {

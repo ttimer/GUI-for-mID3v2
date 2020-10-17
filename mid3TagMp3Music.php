@@ -33,6 +33,8 @@ include_once("mid3TagMp3.inc.php");
 
 if (isset($_POST["relpfad"]))
   $relpfad = $_POST["relpfad"];
+if(substr($relpfad, -1, 1) != "/" && strlen($relpfad) > 1)
+  $relpfad = $relpfad . "/";
   
 if(!empty($_POST["artist"]))
   $artist = $_POST["artist"];
@@ -40,11 +42,10 @@ if(!empty($_POST["album"]))
   $album = $_POST["album"];
 if(!empty($_POST["titel"]))
   $titel = $_POST["titel"];
-if(!empty($_POST["track"]))
-  $track = $_POST["track"];
-if(!empty($_POST["genre"]))
-  $genre = $_POST["genre"];
-  
+if(!empty(@$_POST["track"]) || @$_POST["track"] == 0)
+  $track = @$_POST["track"];
+if(!empty(@$_POST["genre"]) || @$_POST["genre"] == 0)
+  $genre = @$_POST["genre"];  
 ?>
 
 <form name="id3" method="post" action="<?php echo $_SERVER["PHP_SELF"] ?>" style="margin-left:11%;" onsubmit="ladenein();">
@@ -103,6 +104,8 @@ if (isset($_POST["submit"])) {
   if(isset($_POST["execute"]))
     $execute = $_POST["execute"];
  
+  if(substr($relpfad, -1, 1) != "/" && strlen($relpfad) > 1)
+    $relpfad = $relpfad . "/";
   $batch = scan_dir($relpfad, $fileTyp, TRUE, FALSE, TRUE, $onlyDir, $dateien);
   
   if($batch == false) {

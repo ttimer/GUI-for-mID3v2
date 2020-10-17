@@ -10,6 +10,9 @@
 </head>
 
 <?php
+$GUI = "ID3-tags-powered-by:ID3 by GitHub.com/ttimer/GUI-for-mID3v2";
+$LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
+
 // Um ein Bild-Dummy zu erstellen, kann von einer 
 // MP3-Datei eine ID3-Tags-Kopie gezogen werden. 
 // (abc01.mp3 ==> dummy:X01-00.mp3 ==> abc00.mp3)
@@ -76,7 +79,8 @@ if (isset($_POST["submit"])) {
     foreach($tags as $tag) {
      if(strstr($tag, "=")) { 
       if(strstr($tag, "APIC=")) $pflag = "P";
-      if(strstr($tag, "APIC=") || strstr($tag, "TLEN=") || strstr($tag, "unrepresentable data"))
+      if(strstr($tag, "APIC=") || strstr($tag, "unrepresentable data") || 
+         strstr($tag, "TLEN=") || strstr($tag, "ID3 by GitHub.com/ttimer/GUI-for-mID3v2"))
        continue;
   
       $tag  = str_replace("'", "’", $tag); // abc'd fff => abc’d fff (Rückwandlung am Schrittende)
@@ -120,7 +124,7 @@ if (isset($_POST["submit"])) {
 //       if(strstr($para, "¦")) {
 //        $para = str_replace("¦", "=", $para); // 'abc¦xyz' => 'abc=xyz' (¦ -> =) :: DELETE ???
 //       }
-      $paras = $paras.$para;
+      $paras = $paras . $para;
      }
     }
     $paras = trim($paras);
@@ -130,9 +134,6 @@ if (isset($_POST["submit"])) {
     $shellBefehl = "mid3v2 $paras '$ziel'";
     $befehl = $shellBefehl;
   }
-  //print ("\n<br>mid3cp '$quelle' '$ziel'");
-  //print $shellBefehl;
-  //$shellBefehl = "";
   
   // Daten auf die Zieldatei übertragen
   // (ggf. vorab im Textfeld anpassen/erweitern -- bspw. Tracknummer minus 1)
@@ -140,7 +141,10 @@ if (isset($_POST["submit"])) {
     if($Xkopie) { 
       exec("mid3cp '$quelle' '$ziel'");
     }
+    if(!strstr($befehl, $GUI))
+      $befehl = str_replace("mid3v2", "mid3v2 --WXXX '$GUI'", $befehl);
     exec($befehl, $var);
+    $befehl = str_replace("mid3v2 --WXXX '$GUI'", "mid3v2", $befehl);
     $shellBefehl = "";
     $var = "";
   }
@@ -166,10 +170,12 @@ if (isset($_POST["submit"])) {
     <?php if($pflag == "P") echo '&nbsp; <img src="pic.jpg" width="22" height="22" alt="pic present!" title="dummy pic"> Picture present!'; ?>
   </p>
   <p>
-    copy first: <input type="checkbox" name="kopie" checked /> &nbsp; [edit after full copy (esp. w/ APIC, LINK ...)]
+    copy first: <input type="checkbox" name="kopie" checked /> &nbsp; [edit after full copy &nbsp;(esp. w/ APIC, LINK ...)]
   </p>
   <p>
-    executeit: &nbsp;<input type="checkbox" name="execute" /> &nbsp; [edit textarea beforehand] (list of <a href="./mid3TagMp3Frames.php" target="frame">tags/frames</a>)
+    executeit: &nbsp;<input type="checkbox" name="execute" /> &nbsp; [edit textarea beforehand] &nbsp; 
+    (list of <a href="./mid3TagMp3Frames.php" target="frame" title="mid3v2 -f">tag frames</a> and <a href="./mid3TagMp3Genre.php" target="genre" title="mid3v2 -L">genres</a>)
+    <!--<a href="./mid3TagMp3Help.php" target="help" title="mid3v2 -h">edit</a>-->
   </p>
  </fieldset>
  
