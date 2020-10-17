@@ -15,11 +15,13 @@
       </style>
   </head>
   <body>
-    <h2>Frames (tags) supported by mid3v2</h2>
+    <h2>Frames supported<span style="font-weight:200;">(?)</span> by mid3v2</h2>
     <table border="1">
       <tr><td>
         <?php 
         $frame = "";
+        $block = 35;
+        $bstep = $block + 1;
         $shellBefehl = "mid3v2 -f";
         exec($shellBefehl, $frame);
         if(!$frame)
@@ -28,8 +30,10 @@
           echo '<b><span class="u">';
           echo '<b><span class="m">' . substr($strValue,6,4) . '</span>&nbsp; '; 
           echo substr($strValue,14) . "</span></b><br>\n";
-          if($strKey == 35 || $strKey == 71 || $strKey == 107 || $strKey == 143) 
+          if($strKey == $block) {
             echo '</td><td>';
+            $block = $block + $bstep;
+          }
         }
         //simpel: echo '<b>' . $strValue . '</b><br>' . "\n";
         ?>
