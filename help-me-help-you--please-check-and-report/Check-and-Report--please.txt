@@ -1,0 +1,37 @@
+---------- 
+Book1 + 3
+---------- 
+
+# Cover picture embedded in ../CD01/01-01.mp3 only 
+
+# All other mp3 files links to that picture 
+
++ My device (Mobile: SAMSUNG GT-I8190N) shows NOT a single picture 
+
++ The software player (VLC, revision 2.2.2-0-g6259d80) shows NOT a single picture 
+
+Please report devices/players that shows pictures! 
+http://smolka.lima-city.de/contact.php
+
+
+---------- 
+Book2 + 4
+---------- 
+
+# Cover picture embedded in ../01-00.mp3 only 
+
+# All other mp3 files links to that picture 
+
++ My device (Mobile: SAMSUNG GT-I8190N) shows the embedded picture only 
+
++ The software player (VLC, revision 2.2.2-0-g6259d80) shows the embedded picture only 
+
+Please report devices/players that shows more pictures! 
+http://smolka.lima-city.de/contact.php
+
+
+
+========= 
+ T H X !
+========= 
+
