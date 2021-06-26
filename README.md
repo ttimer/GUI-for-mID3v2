@@ -38,7 +38,11 @@ The used environment is:
 
   +  PHP 7.2.33
   +  Python 3.5.2
-  +  Python-Mutagen 1.31
+  +  Python-Mutagen
   +    mid3v2 and mid3cp (part of Mutagen)
+  
+     $ mid3v2 --version
+       mid3v2 1.3
+       Uses Mutagen 1.43.0
 
 Some are prerequisites (like PHP, Python and Mutagen), others are interchangeable. For example, if you use Chromium instead of Firefox you must edit the automation shell scripts or do the start steps manually.
