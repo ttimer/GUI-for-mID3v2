@@ -23,11 +23,13 @@ ID3-Bulk-Tagging :: GUI for mid3v2 (Mutagen)
 Quick-and-Dirty GUI for mid3v2
 ------------------------------ 
 
-A quick-and-dirty UI for mid3v2 to add and/or edit MP3-ID3-Tags of a whole talking book or a complete music collection at once. There are many, many, really many things to do, but this toolbox is usable already. A caveat is that your data has to fit into one of these fixed structures:
+A quick-and-dirty UI for mid3v2 to add and/or edit MP3-ID3-Tags of a whole talking book or a complete music collection at once. There are many, many, really many things to do, but this toolbox is usable already. A caveat is that your data should fit into one of these fixed structures (to use the automatisms):
 
      <DIR>--[SUBDIRs]--<FILEs: "Artist - Titel.mp3">  or 
 
      <DIR: Artist>--<SUBDIR: Album>--[SUBDIRs]--<FILEs: "Titel.mp3">
+     
+     (Unless you do the namings by hand!)
 
 The used environment is:
 
