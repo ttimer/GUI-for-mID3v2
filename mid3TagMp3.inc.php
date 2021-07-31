@@ -1,7 +1,7 @@
 <?php
 /**
  *   
- *   @author Jürgen Smolka
+ *   @author JÃ¼rgen Smolka
  *   @link   https://smolka.lima-city.de/
  *   
  *
@@ -13,12 +13,12 @@
  *	Linux / Windows 
  *	PHP 3, PHP 4, PHP 5
  *
- *	Listet alle Dateien oder wahlweise nur ausgewählte Dateitypen (z.B. *.jpg)
+ *	Listet alle Dateien oder wahlweise nur ausgewÃ¤hlte Dateitypen (z.B. *.jpg)
  *	eines Verzeichnisses rekursiv auf. Entweder kann nur das angebenene Verzeichnis 
  *	oder rekursiv alle Verzeichnisse und Unterverzeichnisse gelistet werden.
  *	Weiterhin kann ein Array mit aufzulistende Dateitypen dargestellt werden.
- *	Als Rückgabewert erhalten Sie eine Variable mit sämtlichen Verzeichnissen, Dateien,
- *	Dateigröße sowie das Aktualisierungsdatum der einzelnen Dateien.
+ *	Als RÃ¼ckgabewert erhalten Sie eine Variable mit sÃ¤mtlichen Verzeichnissen, Dateien,
+ *	DateigrÃ¶ÃŸe sowie das Aktualisierungsdatum der einzelnen Dateien.
  *	Um eine barrierefreie Darstellung zu garantieren, ist die Ausgabe valide zu HTML 4.01
  *	und CSS 2.0 
  *
@@ -51,9 +51,9 @@
  
  
 /**
- * Baut die Struktur für die Darstellung auf
+ * Baut die Struktur fÃ¼r die Darstellung auf
  *
- * @param		array		$pictures		Enthält den Inhalt der Verzeichnisstruktur
+ * @param		array		$pictures		EnthÃ¤lt den Inhalt der Verzeichnisstruktur
  *
  * @return	string							Liefert das fertige HTML/CSS Layout						
  */
@@ -80,7 +80,7 @@ function buildSites($pictures)
 			if(!empty($pictures[$key][$key2]['file'])){
 				$size			=	number_format($pictures[$key][$key2]['size'], 1, ',', '.');
 				$date			=	date("d.m.Y, H:i:s", $pictures[$key][$key2]['time']);
-				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+				$alt			=	'Datum: ' . $date . ' / GrÃ¶ÃŸe: ' . $size . 'KB'; 
 				$path			= $pictures[$key]['name']['path'].$pictures[$key][$key2]['file'];
 				$ausgabe	.= '			<li><a href="'.$path.'" target="_blank" title="'.$alt.'">';
 				$ausgabe .= $pictures[$key][$key2]['file'];
@@ -100,116 +100,9 @@ function buildSites($pictures)
 // Liste der vorhandenen Tags - Aufruf per mid3TagMp3ListTags.php
 function buildSites1($batch)
 {
-    $ausgabe = "";     // JS
-    
-	reset($batch);
-	ksort($batch); // JS sortiert Verzeichnisse (CD1, CD2 ...)
-
-	if(!$batch) {
-          echo '<h4 style="color:red; margin-left:11%;">No data fetched ...</h4>';
-          echo '<p style="margin-left:11%;">Try <b>mid3v2 -l <i>file.mp3</i></b> on konsole!</p>';
-          exit();
-        }              // JS
-
-	echo '<a name="tag"></a><br>';
-	echo '<dir style="margin-left:11%;">';
-	echo '<b>tags only</b> &nbsp;<a href="#file">files only</a> &nbsp;';
-	echo '<a href="#kombi">combined</a> &nbsp;<a href="#top">top</a><br>';
-	echo "</dir>\n";
-	foreach($batch as $key => $array) 
-	{
-		ksort($array); // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
-		
-		foreach ($array as $key2 => $array1) 
-		{
-			if(!empty($batch[$key][$key2]['file'])){
-				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
-				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
-				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
-
-				$tags = "";
-                                $shellBefehl = "mid3v2 -l '$path'";
-                                exec($shellBefehl, $tags);
-
-                                foreach ( $tags as $strKey => $strValue ) {
-                                  if($strKey != 0)
-                                    echo ' | ' . $strValue;
-                                }
-                                echo "<br> \n <br> \n";
-			}
-		}
-	}
-
-	flush();
-	echo '<hr style="width:80%;"><br>';
-	echo '<a name="file"></a>';
-	echo '<dir style="margin-left:11%;">';
-	echo '<a href="#tag">tags only</a> &nbsp;<b>files only</b> &nbsp;';
-	echo '<a href="#kombi">combined</a> &nbsp;<a href="#top">top</a><br>';
-	echo "</dir>\n";
-	foreach($batch as $key => $array) 
-	{
-		ksort($array); // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
-		
-		foreach ($array as $key2 => $array1) 
-		{
-			if(!empty($batch[$key][$key2]['file'])){
-				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
-				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
-				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
-
-				$tags = "";
-                                $shellBefehl = "mid3v2 -l '$path'";
-                                exec($shellBefehl, $tags);
-
-                                foreach ( $tags as $strKey => $strValue ) {
-                                  if($strKey == 0)
-                                    echo $strValue;
-                                }
-                                echo "<br> \n <br> \n";
-			}
-		}
-	}
-
-        flush();
-	echo '<hr style="width:80%;"><br>';
-	echo '<a name="kombi"></a><br>';
-	echo '<dir style="margin-left:11%;">';
-	echo '<a href="#tag">tags only</a> &nbsp;<a href="#file">files only</a> &nbsp;';
-	echo '<b>combined</b> &nbsp;<a href="#top">top</a><br>';
-	echo "</dir>\n";
-	foreach($batch as $key => $array) 
-	{
-		ksort($array); // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
-		
-		foreach ($array as $key2 => $array1) 
-		{
-			if(!empty($batch[$key][$key2]['file'])){
-				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
-				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
-				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
-
-				$tags = "";
-                                $shellBefehl = "mid3v2 -l '$path'";
-                                exec($shellBefehl, $tags);
-
-                                foreach ( $tags as $strKey => $strValue ) {
-                                  if($strKey == 0)
-                                    echo '<b>' . $strValue . '</b><br>' . "\n";
-                                  else
-                                    echo ' | ' . $strValue;
-                                }
-                                echo "<br> \n <br> \n";
-			}
-		}
-	}
-    return $ausgabe;
 }
 
-// Hörbücher u. ä. - Aufruf per: mid3TagMp3??????.php
+// HÃ¶rbÃ¼cher u. Ã¤. - Aufruf per: mid3TagMp3??????.php
 function buildSites2($batch)
 {
 $GUI = "ID3-tags-powered-by:ID3 by GitHub.com/ttimer/GUI-for-mID3v2";
@@ -251,7 +144,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 			if(!empty($batch[$key][$key2]['file'])){
 				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
 				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+				$alt			=	'Datum: ' . $date . ' / GrÃ¶ÃŸe: ' . $size . 'KB'; 
 				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
 				//$ausgabe	.= '			<li><a href="'.$path.'" target="_blank" title="'.$alt.'">';
 				//$ausgabe .= $path . $batch[$key][$key2]['file'];
@@ -280,7 +173,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 	$Artist = trim($Artist);
 	$Album  = trim($Album);
 	$Titel  = trim($Titel);
-	$Genre  = "101";  // Speech (bspw. Hörbuch)
+	$Genre  = "101";  // Speech (bspw. HÃ¶rbuch)
 // 	$Coment = "";
 	$Exe    = "";
 	//echo $Artist . $Album . $Titel .$Track . $Datei . "<br />\n";
@@ -312,7 +205,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 	  //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' -c '$Coment' '$Datei'");
 	//exec("mid3v2 -a '$Artist' -A 'Moerderische Cote d Azur' -t '$Titel' -T $Track -g 101 '$Datei'");
 	
-// 	// Genre 101 == Speech (Hörbuch)
+// 	// Genre 101 == Speech (HÃ¶rbuch)
 // 	echo("id3ren -tag -edit -tagonly -noyear -nocomment -album='$Album' -artist='$Artist' -song='$Titel' -track=$Track -genre=101 '$Datei'<br />\n");
 // 	exec("id3ren -tag -edit -tagonly -noyear -nocomment -album='$Album' -artist='$Artist' -song='$Titel' -track=$Track -genre=101 '$Datei'");
 	
@@ -351,7 +244,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
     return $ausgabe;
 }
 
-// Hörbücher u. ä. - Aufruf per: mid3TagMp3AudioBook.php
+// HÃ¶rbÃ¼cher u. Ã¤. - Aufruf per: mid3TagMp3AudioBook.php
 function buildSites2b($batch)
 {
 $GUI = "ID3-tags-powered-by:ID3 by GitHub.com/ttimer/GUI-for-mID3v2";
@@ -389,7 +282,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
             if(!empty($batch[$key][$key2]['file'])){
 //                 $size = number_format($batch[$key][$key2]['size'], 1, ',', '.');
 //                 $date = date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-//                 $alt  = 'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+//                 $alt  = 'Datum: ' . $date . ' / GrÃ¶ÃŸe: ' . $size . 'KB'; 
                 $path = $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
 //                 
 //                 $ausgabe .= $path;
@@ -407,7 +300,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
                 $Artist  = trim($Artist);
                 $Album   = trim($Album);
                 $Titel   = trim($Titel);
-                $Genre   = "101";                 // Speech (bspw. Hörbuch)
+                $Genre   = "101";                 // Speech (bspw. HÃ¶rbuch)
                 $Year    = "";
         	$Comment = "";
         	$Picture = "";
@@ -464,7 +357,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
                 // Batch-Anzeige
                 echo "<p style='margin-left:7%;'>" . $Anzeige . "</p>\n"; //echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'<br />\n");
                 
-                // Änderung durchführen
+                // Ã„nderung durchfÃ¼hren
                 if($Exe == "on")
                   exec($Befehl); //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'");
                 
@@ -503,7 +396,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
     return $ausgabe;
 }
 
-// Hörbücher u. ä. - Aufruf per: mid3TagMp3AudioBookP1.php (aktuell auch ..P1L)
+// HÃ¶rbÃ¼cher u. Ã¤. - Aufruf per: mid3TagMp3AudioBookP1.php (aktuell auch ..P1L)
 // -- P1(!) :: Bild nur in erster MP3-Datei speichern
 function buildSites2c($batch)
 {
@@ -543,7 +436,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
             if(!empty($batch[$key][$key2]['file'])){
 //                 $size = number_format($batch[$key][$key2]['size'], 1, ',', '.');
 //                 $date = date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-//                 $alt  = 'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+//                 $alt  = 'Datum: ' . $date . ' / GrÃ¶ÃŸe: ' . $size . 'KB'; 
                 $path = $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
 //                 
 //                 $ausgabe .= $path;
@@ -561,7 +454,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
                 $Artist  = trim($Artist);
                 $Album   = trim($Album);
                 $Titel   = trim($Titel);
-                $Genre   = "101";                 // Speech (bspw. Hörbuch)
+                $Genre   = "101";                 // Speech (bspw. HÃ¶rbuch)
                 $Year    = "";
         	$Comment = "";
         	$Picture = "";
@@ -623,7 +516,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
                 // Batch-Anzeige
                 echo "<p style='margin-left:7%;'>" . $Anzeige . "</p>\n"; //echo("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'<br />\n");
                 
-                // Änderung durchführen
+                // Ã„nderung durchfÃ¼hren
                 if($Exe == "on")
                   exec($Befehl); //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' '$Datei'");
                 
@@ -662,7 +555,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
     return $ausgabe;
 }
 
-// Musikstücke/Songs (mp3-Dateien) - Aufruf per: mid3TagMp3Music.php
+// MusikstÃ¼cke/Songs (mp3-Dateien) - Aufruf per: mid3TagMp3Music.php
 function buildSites3($batch)
 {
 $GUI = "ID3-tags-powered-by:ID3 by GitHub.com/ttimer/GUI-for-mID3v2";
@@ -689,7 +582,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 			if(!empty($batch[$key][$key2]['file'])){
 				$size			=	number_format($batch[$key][$key2]['size'], 1, ',', '.');
 				$date			=	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
-				$alt			=	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+				$alt			=	'Datum: ' . $date . ' / GrÃ¶ÃŸe: ' . $size . 'KB'; 
 				$path			= $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
 				//$ausgabe	.= '			<li><a href="'.$path.'" target="_blank" title="'.$alt.'">';
 				//$ausgabe .= $path . $batch[$key][$key2]['file'];
@@ -740,7 +633,7 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 	  //exec("mid3v2 -a '$Artist' -A '$Album' -t '$Titel' -T $Track -g '$Genre' -c '$Coment' '$Datei'");
 	//exec("mid3v2 -a '$Artist' -A 'Moerderische Cote d Azur' -t '$Titel' -T $Track -g 101 '$Datei'");
 	
-// 	// Genre 101 == Speech (Hörbuch)
+// 	// Genre 101 == Speech (HÃ¶rbuch)
 // 	echo("id3ren -tag -edit -tagonly -noyear -nocomment -album='$Album' -artist='$Artist' -song='$Titel' -track=$Track -genre=101 '$Datei'<br />\n");
 // 	exec("id3ren -tag -edit -tagonly -noyear -nocomment -album='$Album' -artist='$Artist' -song='$Titel' -track=$Track -genre=101 '$Datei'");
 	
@@ -765,19 +658,19 @@ $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 }
 
 /**
- * Füllt das Array mit den Dateiinformationen
- * (Pfad, Verzeichnisname, Dateiname, Dateigröße, letzte Aktualisierung
+ * FÃ¼llt das Array mit den Dateiinformationen
+ * (Pfad, Verzeichnisname, Dateiname, DateigrÃ¶ÃŸe, letzte Aktualisierung
  *
  * @param		string	$dir 				Pfad zum Verzeichnis
- * @param		string	$file				enthält den Dateinamen
- * @param		string	$onlyDir		Enthält den Verzeichnisnamen für die Überschrift
- *															über den Bildernamen
+ * @param		string	$file				enthÃ¤lt den Dateinamen
+ * @param		string	$onlyDir		EnthÃ¤lt den Verzeichnisnamen fÃ¼r die Ãœberschrift
+ *															Ã¼ber den Bildernamen
  * @param		array		$type				aufzulistende Bildtypen
  *															genommen, ansonsten der Pfad
  * 															Default: FALSE
  * @param		bool		$allFiles		Listet alle Dateien in den Verzeichnissen auf
- *															ohne Rücksicht auf $type	
- * @param		array		$pictures		Enthält den Inhalt der Verzeichnisstruktur
+ *															ohne RÃ¼cksicht auf $type	
+ * @param		array		$pictures		EnthÃ¤lt den Inhalt der Verzeichnisstruktur
  *
  * @return	array								Das Array mit allen Dateinamen						
  */
@@ -807,21 +700,21 @@ function buildArray($dir,$file,$onlyDir,$type,$allFiles,$pictures)
 }
 
 /**
- * Durchläuft rekursiv das zu durchsuchende Verzeichnis
+ * DurchlÃ¤uft rekursiv das zu durchsuchende Verzeichnis
  *
  * @param		string	$dir 				Pfad zum Verzeichnis
  * @param		array		$type				aufzulistende Bildtypen
- * @param		bool		$only				Bei den Überschriften wird nur der Verzeichnisname
+ * @param		bool		$only				Bei den Ãœberschriften wird nur der Verzeichnisname
  *															genommen, ansonsten der Pfad
  * 															Default: FALSE
  * @param		bool		$allFiles		Listet alle Dateien in den Verzeichnissen auf
- *															ohne Rücksicht auf $type	
+ *															ohne RÃ¼cksicht auf $type	
  *															Default:	FALSE
- * @param		bool		$recursive	Durchläuft rekursiv alle Verzeichnisse und Unterverzeichnisse
+ * @param		bool		$recursive	DurchlÃ¤uft rekursiv alle Verzeichnisse und Unterverzeichnisse
  *															Default:	TRUE
- * @param		string	$onlyDir		Enthält den Verzeichnisnamen für die Überschrift
- *															über den Bildernamen
- * @param		array		$pictures		Enthält als Verweis(Referenz) den Inhalt der Verzeichnisstruktur
+ * @param		string	$onlyDir		EnthÃ¤lt den Verzeichnisnamen fÃ¼r die Ãœberschrift
+ *															Ã¼ber den Bildernamen
+ * @param		array		$pictures		EnthÃ¤lt als Verweis(Referenz) den Inhalt der Verzeichnisstruktur
  *
  * @return	mixed								false im Fehlerfall, ansonsten ein Array mit allen Dateinamen						
  */
@@ -834,7 +727,7 @@ function scan_dir($dir, $type=array(),$only=FALSE, $allFiles=FALSE, $recursive=T
 	if(!$handle)
 		return false;
 
-        // HIER [scandir] verwenden und dann über das sortierte(!) Array gehen 
+        // HIER [scandir] verwenden und dann Ã¼ber das sortierte(!) Array gehen 
         // - anstatt das unsortierte [readdir]
 		
 	while ($file = @readdir ($handle))
