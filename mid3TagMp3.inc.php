@@ -100,6 +100,127 @@ function buildSites($pictures)
 // Liste der vorhandenen Tags - Aufruf per mid3TagMp3ListTags.php
 function buildSites1($batch)
 {
+  $ausgabe = "";      // JS
+  $anzahl1 = 0;       // JS
+  $anzahl2 = 0;       // JS       (dateien=anzahl2-anzahl1)
+  $anzmin  = 6;       // JS
+  $zaehl0  = 61;      // JS202106 (max. 50 tags/frames per file)
+  $zaehl   = $zaehl0; // JS202106
+  $datei   = array(); // JS202106
+  $daten   = array(); // JS202106
+  $dummy   = array(); // JS202106
+
+  if(!$batch) {
+    echo '<h4 style="color:red; margin-left:11%;">No data fetched ...</h4>';
+    echo '<p style="margin-left:11%;">Try <b>mid3v2 -l <i>file.mp3</i></b> on konsole!</p>';
+    exit();
+  }
+
+  reset($batch);
+  ksort($batch);      // JS sortiert Verzeichnisse (CD1, CD2 ...)
+
+  echo '<a name="tag"></a><br>';
+  echo '<dir style="margin-left:11%; display:none;" id="sp1">';
+  echo '<b>tags only</b> &nbsp;<a href="#file">files only</a> &nbsp;';
+  echo '<a href="#kombi">combined</a> &nbsp;<a href="#bot">bottom</a>';
+  echo ' &nbsp;<a href="#top">top</a><br>';
+  echo "<br></dir>\n";
+  foreach($batch as $key => $array) {
+    ksort($array);    // JS sortiert Dateien (0101.mp3, 0102.mp3... 0404.mp3 ...)
+    foreach ($array as $key2 => $array1) {
+      $anzahl2 = $anzahl2 + 1;
+      if(!empty($batch[$key][$key2]['file'])) {
+        $size =	number_format($batch[$key][$key2]['size'], 1, ',', '.');
+        $date =	date("d.m.Y, H:i:s", $batch[$key][$key2]['time']);
+        $alt  =	'Datum: ' . $date . ' / Größe: ' . $size . 'KB'; 
+        $path = $batch[$key]['name']['path'].$batch[$key][$key2]['file'];
+        $tags = "";
+
+        $shellBefehl = "mid3v2 -l '$path'";
+        exec($shellBefehl, $tags);
+
+        $datei = array($path=>$tags);
+        $daten = array_merge($daten, $datei);
+      }
+    }
+  }
+
+  foreach($daten as &$id3) {
+    $dummy = array_flip($id3);  // Tausch key/value
+    $id3 = $dummy;
+    foreach($id3 as $key => &$value) {
+      if(strstr($key, "IDv2 tag info") || $value == 0) $value = 0;
+      elseif(strstr($key, "APIC=")) $value = 57;
+      //elseif(strstr($key, "COMM=")) $value = 59;  // ein weiterer 'verschwindet' (jetzt nicht mehr;)
+      elseif(strstr($key, "LINK=")) $value = 58;    // ein weiterer 'verschwindet'
+      elseif(strstr($key, "TALB=")) $value = 51;
+      elseif(strstr($key, "TCON=")) $value = 55;
+      elseif(strstr($key, "TDRC=") || strstr($key, "TYER=")) $value = 56;
+      elseif(strstr($key, "TIT2=")) $value = 53;
+      elseif(strstr($key, "TPE1=")) $value = 52;
+      elseif(strstr($key, "TRCK=")) $value = 54;
+      elseif(strstr($key, "WXXX=ID3 by GitHub.com/ttimer")) $value = 99;
+      else {
+        $value = $zaehl;
+        $zaehl++;
+      }
+    }
+    unset($value);
+    $zaehl = $zaehl0;
+    $dummy = array_flip($id3);
+    $id3 = $dummy;
+    ksort($id3);
+
+    foreach ( $id3 as $strKey => $strValue ) {
+      if($strKey != 0 && $strKey != 99)
+        echo ' | ' . $strValue;
+    }
+    echo "<br> \n <br> \n";
+  }
+  unset($dummy);
+  unset($id3);
+
+  echo '<hr style="width:80%;"><br>';
+  echo '<a name="file"></a>';
+  if($anzahl2 > $anzmin) {
+    echo '<dir style="margin-left:11%;">';
+    echo '<a href="#tag">tags only</a> &nbsp;<b>files only</b> &nbsp;';
+    echo '<a href="#kombi">combined</a> &nbsp;<a href="#bot">bottom</a>';
+    echo ' &nbsp;<a href="#top">top</a><br>';
+    echo "<br></dir>\n";
+  }
+  flush();
+  foreach($daten as $strKey => $strValue) {
+    echo $strKey;
+    echo "<br> \n <br> \n";
+  }
+
+  echo '<hr style="width:80%;"><br>';
+  echo '<a name="kombi"></a>';
+  if($anzahl2 > $anzmin) {
+    echo '<dir style="margin-left:11%;">';
+    echo '<a href="#tag">tags only</a> &nbsp;<a href="#file">files only</a>';
+    echo ' &nbsp;<b>combined</b> &nbsp;<a href="#bot">bottom</a>';
+    echo ' &nbsp;<a href="#top">top</a><br>';
+    echo "<br></dir>\n";
+  }
+  flush();
+  foreach($daten as $id3) {
+    foreach ($id3 as $strKey => $strValue) {
+      if($strKey == 0)
+        echo '<b>' . $strValue . '</b><br>' . "\n";
+      else
+        echo ' | ' . $strValue;
+    }
+    echo "<br> \n <br> \n";
+  }
+
+  if($anzahl2 > $anzmin) {
+    echo '<dir style="text-align:center;"><p><a href="#top">top</a><br><br></p></dir>';
+    echo '<a name="bot"></a>' . "\n";
+    echo '<script> document.getElementById("sp1").style.display = "block"; </script>';
+  }
+  return $ausgabe;
 }
 
 // Hörbücher u. ä. - Aufruf per: mid3TagMp3??????.php
