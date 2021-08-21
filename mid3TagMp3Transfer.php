@@ -7,10 +7,12 @@
 <meta property="og:url" content="https://smolka.lima-city.de/">
 <meta name="author" content="Jürgen Smolka">
 <script type="text/javascript" src="dhtml.js"></script>
+<!--  JS202106  -->
 </head>
 
 <?php
 $GUI = "ID3-tags-powered-by:ID3 by GitHub.com/ttimer/GUI-for-mID3v2";
+$GU2 = "ID3 by GitHub.com/ttimer/GUIx-for-mID3v2";
 $LNK = "https://GitHub.com/ttimer/GUI-for-mID3v2/";
 
 // Um ein Bild-Dummy zu erstellen, kann von einer 
@@ -59,15 +61,14 @@ if (isset($_POST["submit"])) {
     $shellBefehl = "mid3v2 -l '$quelle'";
     exec($shellBefehl, $var);
     $tags = $var;
-    //print_r($var);
-    //var_dump($var);
+
     if(!is_file($quelle) || !file_exists($quelle)) $noquelle = 'true';
     $shellBefehl = "";
     $var = "";
 
     $shellBefehl = "mid3v2 -l '$ziel'";
     exec($shellBefehl, $var);
-    // print_r($var);
+
     if(!is_file($ziel) || !file_exists($ziel)) $noziel = 'true';
     $shellBefehl = "";
     $var = "";
@@ -78,27 +79,24 @@ if (isset($_POST["submit"])) {
 
     foreach($tags as $tag) {
      if(strstr($tag, "=")) { 
-      if(strstr($tag, "APIC=")) $pflag = "P";
+      if(strstr($tag, "APIC=")) 
+        $pflag = "P";
       if(strstr($tag, "APIC=") || strstr($tag, "unrepresentable data") || 
          strstr($tag, "TLEN=") || strstr($tag, "ID3 by GitHub.com/ttimer/GUI-for-mID3v2"))
-       continue;
+        continue;
   
       $tag  = str_replace("'", "’", $tag); // abc'd fff => abc’d fff (Rückwandlung am Schrittende)
       $para = " --$tag'";
       
-      if(strstr($para, "--COMM") || strstr($para, "--W")) { // --LINK, --Wxxx ???
+      if(strstr($para, "--COMM")) {
        $para = str_replace("iTunNORM", "iTunNORM:", $para);
        $para = str_replace("iTunPGAP", "iTunPGAP:", $para);
        $para = str_replace("iTunSMPB", "iTunSMPB:", $para);
-       $para = str_replace("Comment=eng=", "Comment:", $para);
-       $para = str_replace("=eng=", "", $para);       
-       
+
        // COMM==XXX=?  =>  --COMM ':?:XXX'
-       if(strstr($para, "==")) {
-        $array = explode("=", $para, 4);
-        $array[3] = str_replace("'", "", $array[3]);
-        $para = "$array[0] '$array[1]:$array[3]:$array[2]'";
-       }
+       $array = explode("=", $para, 4);
+       $array[3] = str_replace("'", "", $array[3]);
+       $para = "$array[0] '$array[1]:$array[3]:$array[2]'";
 
        // --COMM ':https://ar...  =>  -e --COMM ':https\://ar...
        if(stristr($para, "http:") || stristr($para, "https:")) {
@@ -133,6 +131,7 @@ if (isset($_POST["submit"])) {
     //if($paras != "" || $paras != 0)
     $shellBefehl = "mid3v2 $paras '$ziel'";
     $befehl = $shellBefehl;
+    $befehl = str_replace(" --WXXX '$GU2'", "", $befehl);
   }
   
   // Daten auf die Zieldatei übertragen
@@ -144,7 +143,8 @@ if (isset($_POST["submit"])) {
     if(!strstr($befehl, $GUI))
       $befehl = str_replace("mid3v2", "mid3v2 --WXXX '$GUI'", $befehl);
     exec($befehl, $var);
-    $befehl = str_replace("mid3v2 --WXXX '$GUI'", "mid3v2", $befehl);
+    $befehl = str_replace(" --WXXX '$GUI'", "", $befehl);
+    $befehl = str_replace(" --WXXX '$GU2'", "", $befehl);
     $shellBefehl = "";
     $var = "";
   }
@@ -152,7 +152,7 @@ if (isset($_POST["submit"])) {
 ?>
 
 <body>
-<noscript style="text-align:center;"><h1>Please activate JavaScript</h1></noscript>
+<noscript><h1 style="text-align:center; background-color:yellow;">Please activate JavaScript</h1></noscript>
 <form name="id3" method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>" style="margin-left:11%;">
  <fieldset style="width:900px;">
   <legend><span style="font-weight:700;">Files</span></legend>
